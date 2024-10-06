@@ -1,0 +1,91 @@
+﻿@page
+@model Lab2.Pages.RegistrationModel
+@{
+}
+
+<div class="container">
+    <h1 class="border-bottom pb-3">Registrations</h1>
+    <div class="row">
+        <div class="col-md-8">
+            <form class="form-inline" method="post">
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <select asp-for="Sl_Student" asp-items="Model.StudentsList" class="form-select mr-md-2">
+                            <option value="">Choose a student ...</option>
+                        </select>
+                        <div class="ml-3"><button type="submit" class="btn btn-primary" asp-page-handler="StudentSelected">Get Registrations</button></div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    @if (Model.NumberOfRecords > 0) {
+        <div class="my-3">
+            <span class="alert-success">The student has registered for the following courses:</span>
+        </div>
+        <table class=" table table-hover">
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Course Title</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(AcademicManagement.Course course in Model.StudentCourses)
+                {
+                    <tr>
+                        <td>@course.CourseCode</td>
+                        <td>@course.CourseTitle</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    
+    @if (Model.SelectStudentSubmitted && !string.IsNullOrEmpty(Model.Sl_Student) && Model.NumberOfRecords == 0)
+    {
+        <div class="my-3">
+            <span class="alert-success">The student has not registered any course. Select course(s) to register:</span>
+        </div>
+        <form method="post">
+
+            <input type="hidden" asp-for="Sl_Student" />
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Title</th>
+                        <th>Check to Register</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (AcademicManagement.Course course in Model.Courses)
+                    {
+                        <tr>
+                            <td>@course.CourseCode</td>
+                            <td>@course.CourseTitle</td>
+                            <td><input type="checkbox" name="SelectedCourses" value="@course.CourseCode"/></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-primary" asp-page-handler="Register">Register</button>
+        </form>
+    }
+    else if (Model.SelectStudentSubmitted && !string.IsNullOrEmpty(Model.NoStudentSelectedError))
+    {
+        <div class="my-3">
+            <span class="alert-danger">@Model.NoStudentSelectedError</span>
+        </div>
+    }
+    
+    @if (!string.IsNullOrEmpty(Model.NoCourseSelectedError))
+    {
+        <div class="my-3">
+            <span class="alert-danger">@Model.NoCourseSelectedError</span>
+        </div>
+    }
+
+</div>
